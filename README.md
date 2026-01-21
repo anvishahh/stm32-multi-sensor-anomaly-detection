@@ -1,61 +1,52 @@
-# STM32 Multi-Sensor Anomaly Detection System
+# STM32 Multi-Sensor Anomaly Detector (B-L475E-IOT01A)
 
-Embedded system built on STM32 that integrates multiple sensors to detect
-environmental anomalies based on configurable thresholds and signal patterns.
+STM32L475 IoT Node project that reads onboard sensors and performs threshold-based anomaly detection with UART telemetry and real-time alerts (LED blink rate + buzzer). Includes an HT16K33 I2C LED matrix display demo.
 
----
-
-## Overview
-This project demonstrates low-level embedded firmware development, sensor
-integration, and system-level design using an STM32 microcontroller.
-
-The system reads data from multiple sensors and performs real-time evaluation
-to flag abnormal conditions.
+> Built originally as a “ghost detector” demo — presented here as a multi-sensor embedded anomaly detection system.
 
 ---
 
-## Hardware Components
-- STM32 microcontroller
-- Environmental sensors (e.g. temperature, humidity, motion, EM/analog inputs)
-- Communication interfaces (I2C / ADC / GPIO)
-- On-board indicators (LED / buzzer / UART output)
+## Hardware
+- **Board:** B-L475E-IOT01A (STM32L475)
+- **Sensors (BSP):** accelerometer, gyroscope, magnetometer, temperature, humidity, pressure
+- **Outputs:** UART (115200), LED (PB14), buzzer (PD14)
+- **Display:** HT16K33 LED matrix via **I2C1 (PB8/PB9)**
 
 ---
 
-## System Architecture
-- Sensor data acquisition via I2C / ADC
-- Threshold-based detection logic
-- Event indication via GPIO / serial output
-
-*(Block diagram in /docs)*
-
----
-
-## Firmware Details
-- Bare-metal / HAL-based STM32 firmware
-- Modular sensor drivers
-- Main loop with periodic sampling
-- Interrupts and timers (if used)
+## Features
+- **Mode 0 (Normal):** prints sensor magnitudes over UART every 1s
+- **Mode 1 (Detection):**
+  - magnetometer magnitude controls LED blink rate
+  - buzzer triggers at high magnetic threshold
+  - periodic threshold checks for temperature/humidity/pressure/IMU events
+- **User button (PC13):**
+  - double press toggles mode
+  - single press in detection mode toggles active state and logs “event captured”
 
 ---
 
-## Results & Testing
-- Verified sensor readings via serial logs
-- Tested detection thresholds under controlled conditions
-- Logged anomaly events for validation
+## How it works
+1. Initialize HAL, SysTick, UART, GPIO, buzzer, I2C, HT16K33
+2. Initialize sensor BSP drivers
+3. Main loop runs mode logic + periodic sampling using `uwTick`
 
 ---
 
-## Future Improvements
-- Sensor fusion / filtering
-- Adaptive thresholds
-- Data logging to external storage
-- Wireless communication
+## Build & Run
+Recommended: STM32CubeIDE.
+1. Open project
+2. Build + flash to B-L475E-IOT01A
+3. Open serial monitor at **115200 8N1**
 
 ---
 
-## Skills Demonstrated
-- Embedded C
-- STM32 peripherals
-- Sensor integration
-- System design and validation
+## Repo layout
+- `firmware/Core/Src/main.c` — main application logic
+- `docs/` — diagrams/logs (add screenshots or UART logs here)
+
+---
+
+## Skills demonstrated
+Embedded C • STM32 HAL/BSP • UART • EXTI interrupts • I2C • sensor integration • real-time thresholding • validation via telemetry
+
